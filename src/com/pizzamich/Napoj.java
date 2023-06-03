@@ -1,61 +1,78 @@
 package com.pizzamich;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-// Klasa Napoj
 public abstract class Napoj {
-    private final String nazwa;
+    private String nazwa;
+    private Cena cena;
 
-    public Napoj(String nazwa) {
+    public Napoj(String nazwa, Cena cena) {
         this.nazwa = nazwa;
+        this.cena = cena;
     }
 
     public String getNazwa() {
         return nazwa;
     }
 
-    public static Napoj wybierzNapoj(Scanner scanner) {
-        Napoj napoj = null;
-        Map<Integer, Napoj> dostepneNapoje = new HashMap<>();
-        dostepneNapoje.put(1, new Pepsi("Pepsi"));
-        dostepneNapoje.put(2, new CocaCola("CocaCola"));
-        dostepneNapoje.put(3, new Sok("Sok"));
-        dostepneNapoje.put(4, new Piwo("Piwo"));
-        dostepneNapoje.put(5, new Wino("Wino"));
+    public Cena getCena() {
+        return cena;
+    }
 
-        System.out.println("\n\u001B[4m" + "Wybierz napój:" + "\u001B[0m");
-        for (Map.Entry<Integer, Napoj> entry : dostepneNapoje.entrySet()) {
-            System.out.println(entry.getKey() + ". " + entry.getValue().getNazwa());
-        }
-        System.out.println("6. Pomiń wybór napoju");
-        System.out.print("\nWybierz numer: ");
-        int napojNr = scanner.nextInt();
+    public static Napoj wybierzNapoj(Scanner scanner, Map<Napoj, Integer> wybraneNapoje) {
+        System.out.println("\n\u001B[4m" + "Czy chcesz dodać napój do zamówienia?" + "\u001B[0m");
+        System.out.println("1. Tak - wyświetl listę napojów");
+        System.out.println("2. Nie - wyświetl podsumowanie");
+        System.out.print("Wybierz numer: ");
+        int wybor = scanner.nextInt();
         scanner.nextLine();
 
-        if (dostepneNapoje.containsKey(napojNr)) {
-            napoj = dostepneNapoje.get(napojNr);
-        } else if (napojNr == 6) {
-            napoj = new BrakNapoju("Pomiń wybór napoju");
+        if (wybor == 1) {
+            return wyswietlListeNapojow(scanner, wybraneNapoje);
         } else {
-            System.out.println("Nie wybrano dostępnych napojów: ");
-            napoj = new BrakNapoju("Pomiń wybór napoju");
+            return new BrakNapoju("Brak napoju", new Cena(0.0));
         }
+    }
 
-        return napoj;
+    private static Napoj wyswietlListeNapojow(Scanner scanner, Map<Napoj, Integer> wybraneNapoje) {
+        System.out.println("\n\u001B[4m" + "Lista napojów:" + "\u001B[0m");
+        System.out.println("1. Pepsi");
+        System.out.println("2. CocaCola");
+        System.out.println("3. Sok");
+        System.out.println("4. Piwo");
+        System.out.println("5. Wino");
+        System.out.print("Wybierz numer: ");
+        int wybor = scanner.nextInt();
+        scanner.nextLine();
+
+        switch (wybor) {
+            case 1:
+                return Pepsi.wybierzPepsi(scanner, wybraneNapoje);
+            case 2:
+                return CocaCola.wybierzCocaCola(scanner, wybraneNapoje);
+            case 3:
+                return Sok.wybierzSok(scanner, wybraneNapoje);
+            case 4:
+                return Piwo.wybierzPiwo(scanner, wybraneNapoje);
+            case 5:
+                return Wino.wybierzWino(scanner, wybraneNapoje);
+            default:
+                System.out.println("Nieprawidłowy wybór. Wybierz numer z listy.");
+                return wyswietlListeNapojow(scanner, wybraneNapoje);
+        }
     }
 
     public static void wyswietlPodsumowanieNapojow(Map<Napoj, Integer> wybraneNapoje) {
-        System.out.println("\n\u001B[4m" + "Wybrane napoje to: " + "\u001B[0m");
-        if (wybraneNapoje.isEmpty()) {
-            System.out.println("Nie wybrano napoju\n");
-        } else {
-            for (Map.Entry<Napoj, Integer> entry : wybraneNapoje.entrySet()) {
-                Napoj wybranyNapoj = entry.getKey();
-                int liczbaSztuk = entry.getValue();
-                System.out.println("- " + wybranyNapoj.getNazwa() + " (ilość: " + liczbaSztuk + ")");
-            }
+        System.out.println("\n\u001B[4m" + "Wybrane napoje to:" + "\u001B[0m");
+        for (Map.Entry<Napoj, Integer> entry : wybraneNapoje.entrySet()) {
+            Napoj napoj = entry.getKey();
+            int ilosc = entry.getValue();
+            System.out.println(ilosc + " szt. x " + napoj.getNazwa() + " = " + napoj.getCena().getWartosc() + " zł");
         }
+        double suma = wybraneNapoje.entrySet().stream()
+                .mapToDouble(entry -> entry.getKey().getCena().getWartosc() * entry.getValue())
+                .sum();
+        System.out.println("com.pizzamich.Cena za wszystkie napoje wynosi: " + suma + " zł");
     }
 }

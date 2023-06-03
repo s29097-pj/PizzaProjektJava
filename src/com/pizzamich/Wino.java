@@ -1,36 +1,39 @@
 package com.pizzamich;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
-// Klasa Piwo - com.pizzamich.Napoj
-public class Wino extends Napoj {
-    public Wino(String nazwa) {
-        super(nazwa);
+class Wino extends Napoj {
+    private static final List<String> rodzaje = Arrays.asList("Czerwone wino", "Białe wino");
+
+    public Wino(String nazwa, Cena cena) {
+        super(nazwa, cena);
     }
 
-    // Metoda wyboru Wina
-    public static Napoj wybierzWino(Scanner scanner) {
+    public static Napoj wybierzWino(Scanner scanner, Map<Napoj, Integer> wybraneNapoje) {
         System.out.println("\n\u001B[4m" + "Wybierz rodzaj wina:" + "\u001B[0m");
-        System.out.println("1. Wytrawne");
-        System.out.println("2. Półwytrawne");
-        System.out.println("3. Słodkie");
-        System.out.println("4. Półsłodkie");
-        System.out.print("\nWybierz numer: ");
-        int rodzajNr = scanner.nextInt();
+        for (int i = 0; i < rodzaje.size(); i++) {
+            System.out.println((i + 1) + ". " + rodzaje.get(i));
+        }
+        System.out.print("Wybierz numer: ");
+        int wybor = scanner.nextInt();
         scanner.nextLine();
 
-        switch (rodzajNr) {
-            case 1:
-                return new Wino("Wytrawne");
-            case 2:
-                return new Wino("Półwytrawne");
-            case 3:
-                return new Wino("Słodkie");
-            case 4:
-                return new Wino("Półsłodkie");
-            default:
-                System.out.println("\n\u001B[4m" + "Nic nie wybrano z dostępnego wina: " + "\u001B[0m");
-                return new BrakNapoju("Brak napoju");
+        if (wybor >= 1 && wybor <= rodzaje.size()) {
+            String nazwa = rodzaje.get(wybor - 1);
+            System.out.print("Podaj ilość szt.: ");
+            int ilosc = scanner.nextInt();
+            scanner.nextLine();
+            Cena cena = new Cena(10.0);  // Przykładowa cena
+            Napoj wino = new Wino(nazwa, cena);
+            wybraneNapoje.put(wino, ilosc);
+            System.out.println("Wybrano: " + wino.getNazwa() + " " + ilosc + " szt. x cena: " + cena.getWartosc() + " zł");
+            return wino;
+        } else {
+            System.out.println("Nieprawidłowy wybór. Wybierz numer z listy.");
+            return wybierzWino(scanner, wybraneNapoje);
         }
     }
 }

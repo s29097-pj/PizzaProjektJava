@@ -1,30 +1,39 @@
 package com.pizzamich;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
-// Klasa Piwo - com.pizzamich.Napoj
-public class Piwo extends Napoj {
-    public Piwo(String nazwa) {
-        super(nazwa);
+class Piwo extends Napoj {
+    private static final List<String> rodzaje = Arrays.asList("Piwo Lager", "Piwo Porter", "Piwo bezalkoholowe", "Pszeniczne");
+
+    public Piwo(String nazwa, Cena cena) {
+        super(nazwa, cena);
     }
 
-    // Metoda wyboru Piwa
-    public static Napoj wybierzPiwo(Scanner scanner) {
+    public static Napoj wybierzPiwo(Scanner scanner, Map<Napoj, Integer> wybraneNapoje) {
         System.out.println("\n\u001B[4m" + "Wybierz rodzaj piwa:" + "\u001B[0m");
-        System.out.println("1. Lager");
-        System.out.println("2. Porter");
-        System.out.print("\nWybierz numer: ");
-        int rodzajNr = scanner.nextInt();
+        for (int i = 0; i < rodzaje.size(); i++) {
+            System.out.println((i + 1) + ". " + rodzaje.get(i));
+        }
+        System.out.print("Wybierz numer: ");
+        int wybor = scanner.nextInt();
         scanner.nextLine();
 
-        switch (rodzajNr) {
-            case 1:
-                return new Piwo("Lager");
-            case 2:
-                return new Piwo("Porter");
-            default:
-                System.out.println("\n\u001B[4m" + "Nic nie wybrano z dostępnego piwa: " + "\u001B[0m");
-                return new BrakNapoju("Brak napoju");
+        if (wybor >= 1 && wybor <= rodzaje.size()) {
+            String nazwa = rodzaje.get(wybor - 1);
+            System.out.print("Podaj ilość szt.: ");
+            int ilosc = scanner.nextInt();
+            scanner.nextLine();
+            Cena cena = new Cena(4.0);  // Przykładowa cena
+            Napoj piwo = new Piwo(nazwa, cena);
+            wybraneNapoje.put(piwo, ilosc);
+            System.out.println("Wybrano: " + piwo.getNazwa() + " " + ilosc + " szt. x cena: " + cena.getWartosc() + " zł");
+            return piwo;
+        } else {
+            System.out.println("Nieprawidłowy wybór. Wybierz numer z listy.");
+            return wybierzPiwo(scanner, wybraneNapoje);
         }
     }
 }

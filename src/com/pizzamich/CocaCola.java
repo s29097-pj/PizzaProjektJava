@@ -1,30 +1,39 @@
 package com.pizzamich;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
-// Klasa CocaCola - com.pizzamich.Napoj
-public class CocaCola extends Napoj {
-    public CocaCola(String nazwa) {
-        super(nazwa);
+class CocaCola extends Napoj {
+    private static final List<String> rodzaje = Arrays.asList("CocaCola Classic", "CocaCola Zero");
+
+    public CocaCola(String nazwa, Cena cena) {
+        super(nazwa, cena);
     }
 
-    // Metoda wyboru rodzaju CocaCola
-    public static Napoj wybierzCocaCola(Scanner scanner) {
+    public static Napoj wybierzCocaCola(Scanner scanner, Map<Napoj, Integer> wybraneNapoje) {
         System.out.println("\n\u001B[4m" + "Wybierz rodzaj CocaCola:" + "\u001B[0m");
-        System.out.println("1. CocaCola Classic");
-        System.out.println("2. CocaCola Zero");
-        System.out.print("\nWybierz numer: ");
-        int rodzajNr = scanner.nextInt();
+        for (int i = 0; i < rodzaje.size(); i++) {
+            System.out.println((i + 1) + ". " + rodzaje.get(i));
+        }
+        System.out.print("Wybierz numer: ");
+        int wybor = scanner.nextInt();
         scanner.nextLine();
 
-        switch (rodzajNr) {
-            case 1:
-                return new CocaCola("CocaCola Classic");
-            case 2:
-                return new CocaCola("CocaCola Zero");
-            default:
-                System.out.println("\n\u001B[4m" + "Nic nie wybrano z dostępnej CocaColi: " + "\u001B[0m");
-                return new BrakNapoju("Brak napoju");
+        if (wybor >= 1 && wybor <= rodzaje.size()) {
+            String nazwa = rodzaje.get(wybor - 1);
+            System.out.print("Podaj ilość szt.: ");
+            int ilosc = scanner.nextInt();
+            scanner.nextLine();
+            Cena cena = new Cena(3.0);  // Przykładowa cena
+            Napoj cocaCola = new CocaCola(nazwa, cena);
+            wybraneNapoje.put(cocaCola, ilosc);
+            System.out.println("Wybrano: " + cocaCola.getNazwa() + " " + ilosc + " szt. x cena: " + cena.getWartosc() + " zł");
+            return cocaCola;
+        } else {
+            System.out.println("Nieprawidłowy wybór. Wybierz numer z listy.");
+            return wybierzCocaCola(scanner, wybraneNapoje);
         }
     }
 }

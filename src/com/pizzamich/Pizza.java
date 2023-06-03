@@ -1,27 +1,24 @@
 package com.pizzamich;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
-// Klasa Pizza
 public class Pizza {
     private final String nazwa;
-    private final List<String> dodatkoweSkladniki;
+    private final List<String> skladniki;
 
-    public Pizza(String nazwa) {
+    public Pizza(String nazwa, List<String> skladniki) {
         this.nazwa = nazwa;
-        this.dodatkoweSkladniki = new ArrayList<>();
+        this.skladniki = skladniki;
     }
 
     public String getNazwa() {
         return nazwa;
     }
 
-    public List<String> getDodatkoweSkladniki() {
-        return dodatkoweSkladniki;
+    public List<String> getSkladniki() {
+        return skladniki;
     }
 
-    public void dodajDodatkowySkladnik(String skladnik) {
-        dodatkoweSkladniki.add(skladnik);
-    }
+    static Scanner scanner = new Scanner(System.in);
 }
